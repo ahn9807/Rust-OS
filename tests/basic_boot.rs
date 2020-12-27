@@ -7,28 +7,20 @@
 use core::panic::PanicInfo;
 use rust_os::println;
 
-#[no_mangle]
+#[no_mangle] // don't mangle the name of this function
 pub extern "C" fn _start() -> ! {
-    println!("Kernel Stated!");
-    println!("Kernel written by junho ahn");
-
-    #[cfg(test)]
     test_main();
 
     loop {}
 }
 
-#[cfg(not(test))]
-#[panic_handler]
-fn panic(_info: &PanicInfo) -> ! {
-    println!("{}", _info);
-
-    loop{}
+#[test_case]
+fn test_println() {
+    println!("test println output");
 }
 
-#[cfg(test)]
+
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     rust_os::test_panic(info);
 }
-
