@@ -5,10 +5,11 @@
 #![reexport_test_harness_main = "test_main"]
 
 use core::panic::PanicInfo;
-use rust_os::println;
+use rust_os::{init, println};
 
 #[no_mangle] // don't mangle the name of this function
 pub extern "C" fn _start() -> ! {
+    init();
     test_main();
 
     loop {}
@@ -17,6 +18,11 @@ pub extern "C" fn _start() -> ! {
 #[test_case]
 fn test_println() {
     println!("test println output");
+}
+
+#[test_case]
+fn test_breakpoint_exception() {
+    x86_64::instructions::interrupts::int3();
 }
 
 
