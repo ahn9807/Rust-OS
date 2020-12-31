@@ -1,4 +1,5 @@
 #![no_std]
+#![no_main] //required at test.. (Why????)
 #![feature(custom_test_frameworks)]
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "test_main"]
@@ -9,9 +10,13 @@ use core::panic::PanicInfo;
 pub mod serial;
 pub mod vga_buffer;
 pub mod interrupts;
+pub mod gdt;
 
 pub fn init() {
+    gdt::init();
+    println!("init global descriptor table");
     interrupts::init_idt();
+    println!("init interrupt table");
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

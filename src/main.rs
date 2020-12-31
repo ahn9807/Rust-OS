@@ -13,9 +13,8 @@ pub extern "C" fn _start() -> ! {
     println!("Kernel written by junho ahn");
 
     rust_os::init();
-    println!("init interrupt table");
-    
-    x86_64::instructions::interrupts::int3();
+
+    //x86_64::instructions::interrupts::int3();
 
     #[cfg(test)]
     test_main();
