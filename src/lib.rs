@@ -13,10 +13,14 @@ pub mod interrupts;
 pub mod gdt;
 
 pub fn init() {
-    gdt::init();
     println!("init global descriptor table");
-    interrupts::init_idt();
+    gdt::init();
     println!("init interrupt table");
+    interrupts::init_idt();
+    println!("init hardware intterupt");
+    unsafe { interrupts::PICS.lock().initialize() };
+    println!("Enable PIC");
+    x86_64::instructions::interrupts::enable();
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -40,7 +44,7 @@ pub fn exit_qemu(exit_code: QemuExitCode) {
 pub extern "C" fn _start() -> ! {
     test_main();
 
-    loop {}
+    hlt_loop();
 }
 
 pub fn test_runner(tests: &[&dyn Testable]) {
@@ -63,7 +67,7 @@ pub fn test_panic(info: &PanicInfo) -> ! {
     serial_println!("Error: {}\n", info);
     exit_qemu(QemuExitCode::Failed);
 
-    loop {}
+    hlt_loop();
 }
 
 pub trait Testable {
@@ -76,5 +80,11 @@ impl<T: Fn()> Testable for T
         serial_print!("{}...\t", core::any::type_name::<T>());
         self();
         serial_println!("[ok]");
+    }
+}
+
+pub fn hlt_loop() -> ! {
+    loop {
+        x86_64::instructions::hlt();
     }
 }

@@ -6,6 +6,7 @@
 
 use core::panic::PanicInfo;
 use rust_os::println;
+use rust_os::hlt_loop;
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
@@ -19,7 +20,7 @@ pub extern "C" fn _start() -> ! {
     #[cfg(test)]
     test_main();
 
-    loop {}
+    hlt_loop();
 }
 
 #[cfg(not(test))]
@@ -27,7 +28,7 @@ pub extern "C" fn _start() -> ! {
 fn panic(_info: &PanicInfo) -> ! {
     println!("{}", _info);
 
-    loop{}
+    hlt_loop();
 }
 
 #[cfg(test)]
