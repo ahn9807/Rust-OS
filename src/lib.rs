@@ -4,6 +4,7 @@
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 #![feature(abi_x86_interrupt)]
+#![feature(alloc_error_handler)]
 
 use core::panic::PanicInfo;
 
@@ -12,6 +13,9 @@ pub mod vga_buffer;
 pub mod interrupts;
 pub mod gdt;
 pub mod memory;
+pub mod allocator;
+
+extern crate alloc;
 
 pub fn init() {
     println!("init global descriptor table");
@@ -22,6 +26,11 @@ pub fn init() {
     unsafe { interrupts::PICS.lock().initialize() };
     println!("Enable PIC");
     x86_64::instructions::interrupts::enable();
+}
+
+#[alloc_error_handler]
+fn alloc_error_handler(layout: alloc::alloc::Layout) -> ! {
+    panic!("allocation error: {:?}", layout)
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
